@@ -19,26 +19,25 @@ def upload_spark_job():
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import col, count, avg, sum as spark_sum, max as spark_max, min as spark_min
 
-# Initialize Spark with Glue catalog
+# Initialize Spark
 spark = SparkSession.builder \\
     .appName("FleetAnalyticsETL") \\
-    .config("hive.metastore.client.factory.class", 
-            "com.amazonaws.glue.catalog.metastore.AWSGlueDataCatalogHiveClientFactory") \\
-    .enableHiveSupport() \\
     .getOrCreate()
 
+S3_BUCKET = "fleet-analytics-data-lake-054375299485"
+
 print("="*60)
-print("FLEET ANALYTICS SPARK JOB")
+print("FLEET ANALYTICS SPARK JOB ON EMR")
 print("="*60)
 
-# Read from Glue tables
-print("\\nReading GPS data from Glue catalog...")
-gps_df = spark.sql("SELECT * FROM fleet_analytics.raw_gps")
+# Read directly from S3 (more reliable than Glue catalog)
+print("\\nReading GPS data from S3...")
+gps_df = spark.read.parquet(f"s3://{S3_BUCKET}/raw/gps/")
 gps_count = gps_df.count()
 print(f"GPS records: {gps_count:,}")
 
-print("\\nReading Delivery data from Glue catalog...")
-delivery_df = spark.sql("SELECT * FROM fleet_analytics.raw_delivery")
+print("\\nReading Delivery data from S3...")
+delivery_df = spark.read.parquet(f"s3://{S3_BUCKET}/raw/delivery/")
 delivery_count = delivery_df.count()
 print(f"Delivery records: {delivery_count:,}")
 
@@ -74,7 +73,7 @@ print(f"Delivery metrics: {delivery_metrics.count()}")
 delivery_metrics.show(10)
 
 # Save aggregations to S3
-output_path = "s3://fleet-analytics-data-lake-054375299485/aggregated/"
+output_path = f"s3://{S3_BUCKET}/emr_output/"
 
 print(f"\\nSaving vehicle summary to {output_path}vehicle_daily/")
 vehicle_summary.write.mode("overwrite").partitionBy("year", "month", "day").parquet(
@@ -148,21 +147,12 @@ def create_emr_cluster():
                     'Args': [
                         'spark-submit',
                         '--deploy-mode', 'cluster',
-                        '--conf', 'spark.sql.catalogImplementation=hive',
-                        '--conf', 'hive.metastore.client.factory.class=com.amazonaws.glue.catalog.metastore.AWSGlueDataCatalogHiveClientFactory',
                         f's3://{S3_BUCKET}/scripts/fleet_etl.py'
                     ]
                 }
             }
         ],
-        Configurations=[
-            {
-                'Classification': 'spark-hive-site',
-                'Properties': {
-                    'hive.metastore.client.factory.class': 'com.amazonaws.glue.catalog.metastore.AWSGlueDataCatalogHiveClientFactory'
-                }
-            }
-        ],
+        Configurations=[],
         ServiceRole='EMR_DefaultRole',
         JobFlowRole='EMR_EC2_DefaultRole',
         VisibleToAllUsers=True,

@@ -358,6 +358,33 @@ Query: Top 10 Vehicles by Activity
   Execution Time: 782 ms
 ```
 
+### EMR Spark Job Execution (Verified)
+
+**Cluster:** `j-3BTNURRYJP7KZ` (EMR 6.15.0)
+
+```
+✓ EMR job completed successfully!
+
+Cluster Timeline:
+  Created:  2026-02-19 22:05:XX
+  Ready:    2026-02-19 22:09:XX (4 min bootstrap)
+  Finished: 2026-02-19 22:34:XX
+  Total:    ~7 minutes (including cluster startup)
+
+Output Files (s3://fleet-analytics-data-lake-054375299485/emr_output/):
+  vehicle_daily/year=2024/month=1/day=13/ - 4,372 bytes
+  vehicle_daily/year=2024/month=1/day=14/ - 4,339 bytes
+  vehicle_daily/year=2024/month=1/day=15/ - 4,385 bytes
+  delivery_daily/year=2024/month=1/day=13/ - 6,167 bytes
+  delivery_daily/year=2024/month=1/day=14/ - 6,121 bytes
+  delivery_daily/year=2024/month=1/day=15/ - 6,261 bytes
+```
+
+**EMR Cost Estimate:**
+- m5.xlarge Master: ~$0.192/hr × 0.5hr = $0.10
+- m5.xlarge Core: ~$0.192/hr × 0.5hr = $0.10
+- **Total: ~$0.20 per run**
+
 ---
 
 ## License
