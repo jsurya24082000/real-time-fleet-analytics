@@ -1,5 +1,9 @@
 # Real-Time Fleet & Delivery Analytics Platform
 
+> **Collaboration note:** This project was developed as an academic 
+> group project in collaboration with 
+> [Karthikaa-Mikkilineni](https://github.com/Karthikaa-Mikkilineni)
+
 A scalable AWS big data pipeline for real-time transportation analytics, featuring GPS tracking, delivery monitoring, and business intelligence dashboards.
 
 ## Performance Metrics
