@@ -109,8 +109,7 @@ real-time-fleet-analytics/
 
 ```bash
 # Clone repository
-git clone https://github.com/Karthikaa-Mikkilineni/real-time-fleet-analytics.git
-cd real-time-fleet-analytics
+git clone https://github.com/jsurya24082000/real-time-fleet-analytics.git
 
 # Install dependencies
 pip install -r requirements.txt
